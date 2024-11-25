@@ -1,0 +1,115 @@
+TodoEventsListComponent.ts
+--------------------------------------
+  
+  constructor(
+    private todoService: TodoManagementService,
+  ) { }
+
+  ngOnInit(): void {
+    this.todoService.fetchData(this.program, this.coreService);
+    this.manageData();
+  }
+  
+  private manageData() {
+    this.overlayController.showOverlay();
+    this.subscriptions.push(
+      this.todoService.page$.subscribe((page) => {
+        this.internalPageEvent = page;
+        this.cdRef.markForCheck();
+      }),
+      this.todoService.data$.subscribe((occurences) => {
+          this.todoListdata = occurences.slice();
+          this.overlayController.hideOverlay();
+          this.cdRef.markForCheck();
+      }),
+      this.todoService.dataLength$.subscribe((dataLength) => {
+          this.dataLength = dataLength;
+          this.cdRef.markForCheck();
+      }),
+      this.todoService.isTableDataEmpty$.subscribe((isEmpty) => {
+        this.isTableDataEmpty = isEmpty;
+        this.cdRef.markForCheck();
+      }),
+      this.todoService.errorMsg$.subscribe((msg) => {
+        this.message = msg;
+        this.cdRef.markForCheck();
+      }),
+    );
+  }
+  
+  
+  
+  TodoManagementService.ts file
+  =================================
+  
+  
+  public todoListdata: Todos[] = [];
+
+  private currentPage = 0;
+  private pageSize = 10
+  private internalPageEvent: PageEvent = {
+    pageNumber: 0,
+    pageSize: this.pageSize,
+  };
+  private readonly page = new BehaviorSubject<PageEvent>(this.internalPageEvent!);
+  public page$ = this.page.asObservable();
+
+  private readonly data = new BehaviorSubject<Todos[]>(this.todoListdata!);
+  public data$ = this.data.asObservable();
+
+  private readonly dataLength = new BehaviorSubject<number>(0);
+  public dataLength$ = this.dataLength.asObservable();
+
+  private readonly isTableDataEmpty = new BehaviorSubject<boolean>(false);
+  public isTableDataEmpty$ = this.isTableDataEmpty.asObservable();
+
+  private readonly errorMsg = new BehaviorSubject<string>('');
+  public errorMsg$ = this.errorMsg.asObservable();
+
+
+    constructor(private homeDataService: HomeDataService) {
+  }
+
+public fetchData(program: Program, coreService: CoreService) {
+    this.sortEvent = null;
+  
+      this.homeDataService
+        .getTodoOrRecentEvents(
+          'todos',
+          coreService.selectedInvestorId,
+          program.reference
+        )
+        .pipe(catchError((error) => {
+          this.isTableDataEmpty.next(true);
+          this.errorMsg.next("message.homePage.serverError")
+          return this.homeDataService.handleError(error)
+        }),
+        
+        )
+        .subscribe((value) => {
+          this.todoListdata = this.mapTodoData(value);
+
+          this.dataLength.next(value.totalSize)
+          this.internalPageEvent = {
+            pageNumber: this.currentPage,
+            pageSize: this.pageSize,
+          };
+          this.page.next(this.internalPageEvent)
+          let data = this.getData(this.filters, this.sortEvent, this.internalPageEvent, this.todoListdata);
+          this.data.next(data);
+        });
+  }
+  
+  HomeDataService.ts
+  =======================
+  
+  public getTodoOrRecentEvents(
+    event: string,
+    investorId: number,
+    programReference: string
+  ): Observable<Page<Entity>> {
+    return this.http.get<Page<Entity>>(
+      this.baseUrl +
+        `${event}/investors?investorId=${investorId}&programReference=${programReference}`
+    );
+  }
