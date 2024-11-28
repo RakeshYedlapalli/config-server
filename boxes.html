@@ -1,0 +1,45 @@
+<div class="container">
+  <div class="box">
+    <div class="icon" style="background-color: #4CAF50;">S</div>
+    <div class="text">Contact Support Team</div>
+  </div>
+  <div class="box">
+    <div class="icon" style="background-color: #FF5722;">A</div>
+    <div class="text">Contact Local Admin</div>
+  </div>
+</div>
+
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 300px; /* Adjust width as needed */
+    border: 1px solid #ccc; /* Add border around the entire container if needed */
+}
+
+.box {
+    display: flex;
+    align-items: center; /* Vertically center content */
+    border: 1px solid #ccc; /* Add border to individual boxes */
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%; /* Make boxes stretch to container width */
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Circle shape */
+    color: white; /* Icon text color */
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.text {
+    font-size: 16px;
+    color: #333;
+}
