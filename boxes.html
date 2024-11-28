@@ -9,21 +9,22 @@
   </div>
 </div>
 
-
 .container {
     display: flex;
     flex-direction: column;
-    width: 300px; /* Adjust width as needed */
-    border: 1px solid #ccc; /* Add border around the entire container if needed */
+    align-items: flex-end; /* Align child elements (boxes) to the right */
+    width: 100%; /* Adjust width as needed */
 }
 
 .box {
     display: flex;
     align-items: center; /* Vertically center content */
+    justify-content: flex-start; /* Ensure the icon and text are aligned horizontally within the box */
     border: 1px solid #ccc; /* Add border to individual boxes */
     padding: 10px;
     box-sizing: border-box;
-    width: 100%; /* Make boxes stretch to container width */
+    width: auto; /* Ensure the boxes are compact */
+    margin: 0; /* Remove any default margins */
 }
 
 .icon {
@@ -43,3 +44,4 @@
     font-size: 16px;
     color: #333;
 }
+
