@@ -1,0 +1,33 @@
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
+
+@Component({
+  selector: 'app-parallel-api',
+  templateUrl: './parallel-api.component.html',
+  styleUrls: ['./parallel-api.component.css']
+})
+export class ParallelApiComponent implements OnInit {
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.fetchData();
+  }
+
+  fetchData(): void {
+    const apiCall1 = this.http.get('https://api.example.com/data1');
+    const apiCall2 = this.http.get('https://api.example.com/data2');
+
+    // Making both API calls in parallel and combining their responses
+    forkJoin([apiCall1, apiCall2]).subscribe({
+      next: ([response1, response2]) => {
+        // Combine or process the responses
+        const combinedData = { ...response1, ...response2 }; // Example of combining
+        console.log('Combined Data:', combinedData);
+      },
+      error: (err) => {
+        console.error('Error occurred:', err);
+      }
+    });
+  }
+}
