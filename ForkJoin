@@ -31,3 +31,28 @@ export class ParallelApiComponent implements OnInit {
     });
   }
 }
+
+
+import { forkJoin, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  // ...
+})
+export class MyComponent {
+  constructor(private http: HttpClient) {}
+
+  fetchData() {
+    const api1$ = this.http.get('https://api.example.com/data1');
+    const api2$ = this.http.get('https://api.example.com/data2');
+
+    forkJoin([api1$, api2$]).subscribe(([data1, data2]) => {
+      // Both API requests have completed
+      console.log('Data from API 1:', data1);
+      console.log('Data from API 2:', data2);
+
+      // Process the combined data
+      // ...
+    });
+  }
+}
