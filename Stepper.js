@@ -97,3 +97,51 @@ Key Notes:
 	•	Vue’s scoped styles are equivalent to Angular’s encapsulated styles via ViewEncapsulation (default behavior in Angular).
 
 You can integrate this into your Angular project and adjust the steps or styles as per your requirements.
+
+.title-container {
+  margin: 0 auto;
+  display: flex; /* Ensure horizontal alignment */
+  justify-content: center; /* Center the stepper horizontally */
+  align-items: center;
+}
+
+.group {
+  display: flex; /* Flex container for horizontal alignment of steps */
+  align-items: center;
+}
+
+.space {
+  display: flex;
+  align-items: center;
+
+  hr {
+    margin: 0 10px; /* Add spacing around the line */
+    border-top: 1px dashed #d2d2d2;
+    color: #d2d2d2;
+    height: 4px;
+    flex: 1; /* Ensure the line takes up available space */
+  }
+
+  &:last-child hr {
+    display: none; /* Hide the line after the last circle */
+  }
+}
+
+.circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px; /* Adjust size */
+  height: 50px;
+  border-radius: 50%;
+  font-size: 14px;
+  color: #3f4d5e;
+  background: #d8dbdb;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Add a smooth transition */
+
+  &.selected {
+    color: #fff;
+    background: #3f4d5e;
+  }
+}	
