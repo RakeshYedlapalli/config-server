@@ -1,4 +1,8 @@
-.tooltip-container {
+/^[^a-bA-Z]*[a-bA-Z][^a-bA-Z]*$/
+
+
+
+-container {
   position: relative;
   display: inline-block;
 }
