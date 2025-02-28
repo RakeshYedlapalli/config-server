@@ -1,0 +1,31 @@
+import java.util.Arrays;
+
+public class CustomStringSort {
+    public static void main(String[] args) {
+        String input = "GaFkBcnmoYX";
+        System.out.println("Sorted String: " + customSort(input));
+    }
+
+    public static String customSort(String str) {
+        // Extract uppercase and lowercase characters
+        StringBuilder upper = new StringBuilder();
+        StringBuilder lower = new StringBuilder();
+
+        for (char ch : str.toCharArray()) {
+            if (Character.isUpperCase(ch)) {
+                upper.append(ch);
+            } else {
+                lower.append(ch);
+            }
+        }
+
+        // Sort both uppercase and lowercase separately
+        char[] upperArr = upper.toString().toCharArray();
+        char[] lowerArr = lower.toString().toCharArray();
+        Arrays.sort(upperArr);
+        Arrays.sort(lowerArr);
+
+        // Merge uppercase first, then lowercase
+        return new String(upperArr) + new String(lowerArr);
+    }
+}
