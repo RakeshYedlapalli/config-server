@@ -3,5 +3,6 @@ I am a full stack Java developer with UI technologies like both Angular and Reac
 
 So I want to learn new as well as revise all the techniques 
 
-Can you prepare my time table considering my tech stack?
+Core Java collections, angular, reactjs, javascript,nodejs, ds and algorithms, spring mvc, spring boot, kafka , aws cloud services, docker, kuberntes, microservices, argo CD, hibernate, postgresql, mongodb, spring security, jenkins, splunk and kibana, jfrog, gilbal ci/cd, swagger, and openapi
 
+Can you prepare my time table considering my tech stack? prepare in a perfect that way easy to learn
