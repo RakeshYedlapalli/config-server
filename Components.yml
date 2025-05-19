@@ -1,0 +1,29 @@
+.component-test:
+  stage: test
+  variables:
+    COMPONENT_TESTS_SKIP: "false"
+    COMPONENT_TESTS_MVN_PROFILE: "e2e"
+    COMPONENT_TESTS_PACKAGE: "bo-automation"
+    CUCUMBER_MAIN_CLASS: "com.cacib.integration.e2e.CucumberTest"
+    CUCUMBER_TAG: 'not @DatabaseCleanup'
+    CUCUMBER_REPORT_FILE: "target/cucumber/cucumber.json"
+
+  script:
+    - |
+      if [ "$COMPONENT_TESTS_SKIP" = "true" ]; then
+        echo "Skipping Component Tests..."; exit 0
+      fi
+
+    - echo "Running Component Test Job for $COMPONENT_TESTS_PACKAGE"
+
+    - |
+      BASE_OPTS="-P $COMPONENT_TESTS_MVN_PROFILE -Dtest=$CUCUMBER_MAIN_CLASS -Dsurefire.failIfNoSpecifiedTests=false -am -Dcucumber.plugin=json:$CUCUMBER_REPORT_FILE"
+      
+      if [ -n "$CUCUMBER_TAG" ]; then
+        BASE_OPTS="$BASE_OPTS -Dcucumber.filter.tags=\"$CUCUMBER_TAG\""
+      fi
+
+    - echo "Running: mvn verify $BASE_OPTS"
+    - mvn verify $BASE_OPTS
+    - mvn allure:report
+    - echo "✅ All component tests have run successfully"
