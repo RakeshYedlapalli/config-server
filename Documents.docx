@@ -1,0 +1,78 @@
+Here are the key breaking changes, deprecated APIs, and library impacts when migrating from Java 17 → Java 21, ideal for documenting in Confluence:
+
+⸻
+
+⚠️ Breaking & Removed APIs
+	•	Thread APIs (stop(), suspend(), resume()) now throw UnsupportedOperationException, to pave way for virtual threads. Refactor or remove their usage  ￼.
+	•	Security Manager & related classes/methods (e.g., System.setSecurityManager, Thread.checkAccess, AccessControlContext, Subject.doAsPrivileged) continue deprecation—likely removed later. Replace with modern security approaches  ￼.
+	•	Finalization (finalize(), System.runFinalization()) deprecated. Must shift to try-with-resources, Cleaner, or disable finalization flags  ￼.
+	•	Removed JDK internal APIs (java.lang.Compiler, sun.misc.*, certain URL constructors). Use URI.create() instead of new URL(String)  ￼.
+	•	Subject API changes: Subject.doAs() replaced by Subject.callAs() with Callable  ￼.
+
+⸻
+
+🆕 New Language & API Features
+	•	Virtual threads (JEP 444) offer lightweight concurrency—adoptable now  ￼.
+	•	SequencedCollection interface impacts custom collections with methods like getFirst()/getLast()—rename or adjust accordingly  ￼.
+	•	Pattern matching, sealed classes, record patterns, type patterns enhanced. Not breaking, but you can refactor old code for expressiveness .
+
+⸻
+
+🔄 Behavioral & Tooling Changes
+	•	Stronger encapsulation of internal JDK APIs. Libraries using reflection (Unsafe, etc.) may fail—temporary fix with --add-opens, but long-term use supported APIs  ￼.
+	•	URL validation tightened, HTTP client defaults changed (timeouts added)  ￼.
+	•	UTF‑8 now default charset, watch for subtle I/O behavior shifts .
+	•	Bug fixes in Double.toString, Float.toString, IdentityHashMap, may alter behavior/output—verify with tests  ￼.
+
+⸻
+
+✅ What You Should Document in Confluence
+
+1. List of removed/deprecated APIs (with replacements)
+	•	Thread.stop/suspend/resume → remove or handle
+  •	System.setSecurityManager → remove/use alternate
+	•	finalize() → migrate to cleaners
+	•	new URL(String) → URI.create(...).toURL()
+	•	Subject.doAs() → Subject.callAs()
+
+2. Behavioral updates requiring test review
+	•	Ensure no misuse of internal APIs; patch with flags if needed
+	•	Confirm charset-dependent IO remains correct
+	•	Validate floating-point toString outputs
+
+3. Optional refactor opportunities
+	•	Adopt virtual threads for threading
+	•	Use pattern matching, sealed classes, records
+	•	Refactor collections to match SequencedCollection
+
+    ### API Changes
+- **Thread.* deprecations**: `stop()`, `suspend()`, `resume()` now throw UOE → refactor or use interrupts.
+- **Security Manager removal path**: drop `System.setSecurityManager`, or flag it.
+- **Finalizers removed**: migrate to `Cleaner` or try-with-resources.
+- **URL constructor fixed**: replace `new URL(str)` with `URI.create(str).toURL()`.
+
+### Behavioral Changes
+- **UTF‑8 default charset**: ensure file encoding handling
+- **Stricter JDK internal access**: add `--add-opens` or remove reflection use.
+- **Floating-point output changes**: adjust formatting in critical logic.
+
+### Migration Opportunities
+- **Virtual threads**: enable in Spring via `spring.threads.virtual.enabled=true`.
+- **Use record/union patterns**: simplify matching code.
+- **SequencedCollection adoption**: resolve custom implementations.
+
+  ### API Changes
+- **Thread.* deprecations**: `stop()`, `suspend()`, `resume()` now throw UOE → refactor or use interrupts.
+- **Security Manager removal path**: drop `System.setSecurityManager`, or flag it.
+- **Finalizers removed**: migrate to `Cleaner` or try-with-resources.
+- **URL constructor fixed**: replace `new URL(str)` with `URI.create(str).toURL()`.
+
+### Behavioral Changes
+- **UTF‑8 default charset**: ensure file encoding handling
+- **Stricter JDK internal access**: add `--add-opens` or remove reflection use.
+- **Floating-point output changes**: adjust formatting in critical logic.
+
+### Migration Opportunities
+- **Virtual threads**: enable in Spring via `spring.threads.virtual.enabled=true`.
+- **Use record/union patterns**: simplify matching code.
+- **SequencedCollection adoption**: resolve custom implementations.
