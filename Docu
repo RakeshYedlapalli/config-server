@@ -1,0 +1,17 @@
+📚 Libraries & APIs Update Checklist
+	•	Jakarta API compatibility verified (javax.* → jakarta.*)
+	•	Any usages of internal JDK APIs (e.g. sun.misc.Unsafe) reviewed and removed
+	•	Reflection code tested under Java 21 with proper module access
+	•	Logging libraries (Logback, SLF4J) updated to latest for Java 21 support
+	•	JUnit, Mockito, AssertJ versions compatible with Java 21
+	•	pom.xml updated with maven.compiler
+🆕 Optional Enhancements with Java 21
+
+Feature
+Usage
+Virtual Threads
+Spring Boot: set spring.threads.virtual.enabled=true
+SequencedCollection
+Replace custom getFirst()/getLast() implementations
+Record Patterns / Switch Pattern Matching
+Consider replacing verbose if-else logic
