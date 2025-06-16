@@ -1,0 +1,81 @@
+Recommended Strategy: Centralized Anomaly Publisher
+
+⸻
+
+✅ 1. Use Spring AOP for Centralized Error Interception
+
+Concept: Wrap your processing methods using a reusable @Around aspect.
+Catch exceptions, identify error type, publish to Kafka, and rethrow/log as needed.
+
+🔹 Step-by-Step:
+	1.	Create a custom annotation for methods you want to monitor:
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CaptureAnomaly {}
+
+
+
+@Aspect
+@Component
+public class AnomalyCaptureAspect {
+
+    @Autowired
+    private AnomalyKafkaPublisher publisher;
+
+    @Around("@annotation(CaptureAnomaly)")
+    public Object handleAnomalies(ProceedingJoinPoint pjp) throws Throwable {
+        try {
+            return pjp.proceed();
+        } catch (BusinessException ex) {
+            publisher.send(new AnomalyEvent("BUSINESS", ex.getMessage(), getContext(pjp)));
+            throw ex;
+        } catch (Exception ex) {
+            publisher.send(new AnomalyEvent("TECHNICAL", ex.getMessage(), getContext(pjp)));
+            throw ex;
+        }
+    }
+
+    private String getContext(ProceedingJoinPoint pjp) {
+        // You can extract method args, class name, etc.
+        return pjp.getSignature().toShortString();
+    }
+}
+
+
+
+@CaptureAnomaly
+public void processEvent(SomeAvroEvent event) {
+    // Business logic
+    if (invalidData) throw new BusinessException("Schema mismatch");
+}
+
+
+Advantages:
+
+	•	Centralized logic, no repeated try-catch
+	•	Publish structured anomalies
+   •	Works well across all services
+
+public class BusinessException extends RuntimeException { ... }
+public class TechnicalException extends RuntimeException { ... }
+
+@Component
+public class AnomalyKafkaPublisher {
+
+    @Autowired
+    private KafkaTemplate<String, AnomalyEvent> kafkaTemplate;
+
+    public void send(AnomalyEvent event) {
+        kafkaTemplate.send("alert-manager-topic", event);
+    }
+}
+
+@CaptureAnomaly
+public void mergeFilesAndProcess() {
+    // no need for try-catch
+    validateFileSchema(); // throws BusinessException if bad
+    callEnrichmentService(); // might throw TechnicalException
+}
+
+
+
