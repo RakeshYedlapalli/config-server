@@ -1,0 +1,69 @@
+technicalRules:
+  - exception: "org.apache.kafka.common.errors.TimeoutException"
+    code: "KAFKA_TIMEOUT"
+    severity: "CRITICAL"
+    message: "Kafka operation timed out"
+
+  - exception: "java.net.ConnectException"
+    code: "CONNECTION_ERROR"
+    severity: "HIGH"
+    message: "Downstream system unreachable"
+
+  - exception: "java.lang.NullPointerException"
+    code: "NULL_POINTER"
+    severity: "MEDIUM"
+    message: "Unexpected null found in processing"
+
+
+@Component
+public class TechnicalErrorHandler {
+
+    private Map<String, Rule> exceptionRules;
+
+    @PostConstruct
+    public void loadRules() throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Map<String, List<Rule>> config = mapper.readValue(
+            new File("src/main/resources/technical-errors.yml"),
+            new TypeReference<>() {}
+        );
+        exceptionRules = config.get("technicalRules").stream()
+            .collect(Collectors.toMap(Rule::getException, r -> r));
+    }
+
+    public void handle(Exception ex) {
+        String exClass = ex.getClass().getName();
+        if (exceptionRules.containsKey(exClass)) {
+            Rule rule = exceptionRules.get(exClass);
+            anomalyReporter.capture(rule.code, rule.message, Map.of("details", ex.getMessage()));
+        }
+    }
+
+    @Autowired
+    private AnomalyReporter anomalyReporter;
+}
+
+
+
+try {
+   // call kafka or db
+} catch (Exception ex) {
+   technicalErrorHandler.handle(ex); // uses config to log/report
+}
+
+@Aspect
+@Component
+public class ExceptionAspect {
+
+    @Autowired
+    private TechnicalErrorHandler errorHandler;
+
+    @AfterThrowing(pointcut = "execution(* com.example..*(..))", throwing = "ex")
+    public void onException(Throwable ex) {
+        errorHandler.handle((Exception) ex);
+    }
+}
+
+
+
+
