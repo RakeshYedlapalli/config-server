@@ -1,0 +1,79 @@
+rules:
+  - id: "MISSING_ACCOUNT"
+    condition: "account == null"
+    severity: "HIGH"
+    message: "Account information is missing"
+
+  - id: "AMOUNT_NEGATIVE"
+    condition: "amount < 0"
+    severity: "MEDIUM"
+    message: "Negative amount is invalid"
+
+public class Rule {
+    public String id;
+    public String condition; // Expression
+    public String severity;
+    public String message;
+}
+
+
+
+
+@Component
+public class RuleEngine {
+
+    private List<Rule> rules;
+
+    @PostConstruct
+    public void init() throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Map<String, List<Rule>> loaded = mapper.readValue(
+            new File("src/main/resources/rules.yml"),
+            new TypeReference<>() {}
+        );
+        rules = loaded.get("rules");
+    }
+
+    public void evaluate(Map<String, Object> eventData) {
+        for (Rule rule : rules) {
+            if (evaluateCondition(rule.condition, eventData)) {
+                System.out.println("⚠️ Alert: " + rule.message);
+                // Optionally publish to Kafka
+            }
+        }
+    }
+
+    private boolean evaluateCondition(String condition, Map<String, Object> data) {
+        try {
+            ExpressionParser parser = new SpelExpressionParser();
+            EvaluationContext context = new StandardEvaluationContext();
+            data.forEach(context::setVariable);
+            return parser.parseExpression(condition).getValue(context, Boolean.class);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}
+
+Map<String, Object> context = Map.of(
+    "account", null,
+    "amount", -100
+);
+ruleEngine.evaluate(context);
+
+
+⚠️ Alert: Account information is missing
+⚠️ Alert: Negative amount is invalid
+
+
+🔥 Benefits
+	•	Easy to add/edit rules without touching Java code
+	•	Supports dynamic alerts, e.g., from DB or config server
+	•	Used in real systems for data validation, anomaly detection, and alerting
+
+
+
+
+
+
+
