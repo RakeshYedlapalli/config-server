@@ -1,0 +1,22 @@
+I’ve attached all relevant Java files. Please optimize the logic in `BusinessAnomalyCaptureService.java` based on the following:
+
+1. Understand the requirement first:
+   - I deserialize Avro objects and validate stock data from two upstreams (Golden Source and Secondary Source).
+   - If validation fails (data mismatch), it triggers a business anomaly and sends a Kafka event immediately.
+   - This anomaly detection runs in a loop, and thousands of such events can occur in a single run.
+
+2. Optimization goals:
+   - Minimize memory usage (critical requirement). This anomaly process should feel memory-light and not spike usage.
+   - Avoid object retention – free memory after use (no holding onto anomaly data unnecessarily).
+   - Use only 4 threads from the existing `ExecutorService` I’ve created. Do not exceed.
+   - Reuse logic: If multiple methods repeat similar logic, refactor and make them generic.
+   - Simplify code structure and reduce unnecessary method calls.
+   - If Java 17 features (like `record`, `sealed`, `pattern matching`, `switch`, `stream optimizations`) help, apply them.
+
+3. Review:
+   - Check the current `ExecutorService` usage – it's not being managed correctly. Fix thread lifecycle and ensure only those 4 threads are used for all anomaly detection.
+   - The anomaly detection logic should be fast, efficient, and non-blocking. Suggest improvements if I’m doing blocking operations unknowingly.
+   - Any method holding onto references unnecessarily or doing complex object transformations – simplify or optimize.
+   - Apply advanced Java techniques if suitable but keep the logic simple and lightweight.
+
+Please scan all attached files, focus on `BusinessAnomalyCaptureService`, and restructure the whole logic to make it clean, modular, and performant.
