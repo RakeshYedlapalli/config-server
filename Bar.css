@@ -1,26 +1,8 @@
-.carousel-indicators {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  width: 80%;
-  height: 5px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
-
-.indicator-bar {
-  flex: 1;
-  background-color: rgba(255, 255, 255, 0.5);
-  height: 100%;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.indicator-bar.active {
-  background-color: white;
-}
+// Copilot: Write comprehensive JUnit test cases for the below class.  
+// Goals:
+// 1. Cover all branches, edge cases, and exceptional scenarios.
+// 2. Aim for 100% code coverage (methods, conditions, loops).
+// 3. Use assertEquals, assertTrue, assertThrows, etc., wherever applicable.
+// 4. Mock external dependencies if any (using Mockito).
+// 5. Use JUnit 5 syntax.
+// 6. Keep tests readable and maintainable.
