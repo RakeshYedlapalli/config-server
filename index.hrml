@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Counting Down to Us</title>
+  <style>
+    :root{
+      --bg1: #ff6b6b;
+      --bg2: #ffc9de;
+      --card: rgba(255,255,255,0.94);
+      --accent: #ff4d6d;
+      --muted: #6b6b6b;
+      --glass: rgba(255,255,255,0.12);
+      --shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.06), transparent 10%),
+                  linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:920px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.80));
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      overflow:hidden;
+      position:relative;
+      border:1px solid rgba(255,255,255,0.6);
+    }
+
+    @media (max-width:860px){
+      .wrap{grid-template-columns:1fr; padding-bottom:18px}
+    }
+
+    .left {
+      padding:44px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      align-items:flex-start;
+    }
+    .right {
+      background: linear-gradient(180deg, rgba(255,77,109,0.08), rgba(255,77,109,0.02));
+      padding:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+
+    h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-0.02em;
+      color:#3b2b2b;
+    }
+    .sub{
+      color:var(--muted);
+      margin-top:6px;
+      font-size:15px;
+    }
+
+    .date-card{
+      margin-top:8px;
+      padding:12px 18px;
+      background:var(--glass);
+      border-radius:12px;
+      display:inline-flex;
+      gap:12px;
+      align-items:center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .date-card strong{font-weight:700; color:var(--accent)}
+
+    .countdown{
+      display:flex;
+      gap:12px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .unit{
+      min-width:90px;
+      background:linear-gradient(180deg,#ffffff,#fffefe);
+      border-radius:12px;
+      padding:14px 12px;
+      text-align:center;
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    }
+    .num{
+      font-size:28px;
+      font-weight:800;
+      color:#2b2b2b;
+      letter-spacing:-0.01em;
+    }
+    .label{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+    }
+
+    .note {
+      margin-top:16px;
+      color:#4a4a4a;
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    .cheer{
+      display:inline-flex;
+      gap:10px;
+      margin-top:20px;
+      align-items:center;
+    }
+    .btn{
+      background:linear-gradient(90deg,var(--accent), #ff7a8c);
+      color:white;
+      padding:10px 16px;
+      border-radius:12px;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      box-shadow: 0 8px 24px rgba(255,77,109,0.18);
+    }
+    .btn:active{transform:translateY(1px)}
+
+    /* Right side heart + message */
+    .heart-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      text-align:center;
+    }
+    .big-msg{
+      font-size:22px;
+      font-weight:800;
+      color:#3b2b2b;
+    }
+    .small{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    /* Heart */
+    .heart{
+      width:160px;
+      height:160px;
+      position:relative;
+      transform:scale(1);
+      transition:transform .25s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .heart:before, .heart:after{
+      content:"";
+      position:absolute;
+      width:100px;
+      height:160px;
+      background:linear-gradient(180deg,#ff5a73,#ff2d56);
+      border-radius:80px 80px 0 0;
+      transform:rotate(-45deg);
+      top:10px;
+      box-shadow: 0 12px 30px rgba(255,45,86,0.18);
+    }
+    .heart:after{
+      transform:rotate(45deg);
+      left:20px;
+    }
+    .heart:before{left:-20px}
+
+    /* pulse when near */
+    .pulse{
+      animation:heartbeat 1.1s infinite;
+    }
+    @keyframes heartbeat{
+      0%{transform:scale(1)}
+      25%{transform:scale(1.06)}
+      40%{transform:scale(1)}
+      60%{transform:scale(1.04)}
+      100%{transform:scale(1)}
+    }
+
+    /* celebratory confetti pieces */
+    .confetti {
+      pointer-events:none;
+      position:absolute;
+      width:6px;
+      height:12px;
+      border-radius:2px;
+      opacity:0;
+      transform:translateY(-20px) rotate(10deg);
+    }
+
+    footer{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:18px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <div class="left">
+      <h1>Counting down to when I see you ✨</h1>
+      <div class="sub">Meeting on <strong>Oct 3, 2025 • 10:30 PM IST</strong></div>
+
+      <div class="date-card" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="opacity:0.95">
+          <path d="M7 10h5" stroke="#ff4d6d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="3" y="4" width="18" height="18" rx="2" stroke="#ff4d6d" stroke-width="1.6" fill="rgba(255,77,109,0.04)"/>
+        </svg>
+        <div>
+          <div style="font-size:12px;color:var(--muted)">Arrival</div>
+          <div><strong>Oct 3, 2025 • 10:30 PM (IST)</strong></div>
+        </div>
+      </div>
+
+      <div class="countdown" id="countdown">
+        <div class="unit"><div class="num" id="days">--</div><div class="label">Days</div></div>
+        <div class="unit"><div class="num" id="hours">--</div><div class="label">Hours</div></div>
+        <div class="unit"><div class="num" id="minutes">--</div><div class="label">Minutes</div></div>
+        <div class="unit"><div class="num" id="seconds">--</div><div class="label">Seconds</div></div>
+      </div>
+
+      <div class="note" id="note">It updates automatically — the target is locked to IST so it shows the right arrival time no matter where you open it.</div>
+
+      <div class="cheer">
+        <button class="btn" id="shareBtn">Copy invite message</button>
+        <div style="font-size:13px;color:var(--muted)">Quick message to share</div>
+      </div>
+
+      <footer>Tip: Host this file or send it to her — clean, warm, and quick to read.</footer>
+    </div>
+
+    <div class="right">
+      <div class="heart-wrap">
+        <div class="heart" id="heart"></div>
+        <div class="big-msg" id="mainMsg">Not long now ❤️</div>
+        <div class="small" id="subMsg">Counting every second until I see you.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Target moment (fixed to IST): October 3, 2025 at 22:30 IST (UTC+5:30)
+    // Using an ISO string with offset so Date parsing respects the IST timezone.
+    const target = new Date('2025-10-03T22:30:00+05:30');
+
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+    const mainMsg = document.getElementById('mainMsg');
+    const subMsg = document.getElementById('subMsg');
+    const heart = document.getElementById('heart');
+    const note = document.getElementById('note');
+
+    function pad(n){ return String(n).padStart(2,'0'); }
+
+    function update() {
+      const now = new Date();
+      const diff = Math.max(0, target - now);
+
+      // compute units
+      const s = Math.floor(diff/1000);
+      const days = Math.floor(s / 86400);
+      const hours = Math.floor((s % 86400) / 3600);
+      const mins = Math.floor((s % 3600) / 60);
+      const secs = s % 60;
+
+      daysEl.textContent = days;
+      hoursEl.textContent = pad(hours);
+      minutesEl.textContent = pad(mins);
+      secondsEl.textContent = pad(secs);
+
+      // Emotional UX tweaks:
+      // - If less than 2 days: pulse heart and friendlier message
+      // - If less than 1 hour: more excited message
+      // - If arrived: celebration
+      if (diff === 0) {
+        mainMsg.textContent = "She's here! 💫";
+        subMsg.textContent = "Run to her — the wait is over.";
+        heart.classList.add('pulse');
+        confettiBurst();
+        note.textContent = "Time reached: enjoy!";
+      } else if (diff <= 3600 * 1000) { // < 1 hour
+        mainMsg.textContent = "Almost there — under an hour!";
+        subMsg.textContent = "Breathe. Smile. I'm almost with you.";
+        heart.classList.add('pulse');
+      } else if (diff <= 48 * 3600 * 1000) { // < 2 days
+        mainMsg.textContent = "So close — just a couple of days!";
+        subMsg.textContent = "Counting down the moments.";
+        heart.classList.add('pulse');
+      } else {
+        mainMsg.textContent = "Not long now ❤️";
+        subMsg.textContent = "Every day brings us closer.";
+        heart.classList.remove('pulse');
+      }
+    }
+
+    // confetti simple burst
+    function confettiBurst(){
+      for(let i=0;i<18;i++){
+        const c = document.createElement('div');
+        c.className='confetti';
+        c.style.left = (30 + Math.random()*60) + '%';
+        c.style.top = (10 + Math.random()*60) + '%';
+        c.style.background = ['#ff6b6b','#ffd166','#6be78c','#7bd5ff','#c78bff'][Math.floor(Math.random()*5)];
+        c.style.transform = `translateY(-20px) rotate(${Math.random()*360}deg)`;
+        c.style.opacity = '1';
+        c.style.transition = 'transform 1200ms cubic-bezier(.2,.9,.2,1), opacity 1200ms ease';
+        document.querySelector('.wrap').appendChild(c);
+        // animate
+        setTimeout(()=> {
+          c.style.transform = `translateY(${120 + Math.random()*120}px) rotate(${Math.random()*720}deg)`;
+          c.style.opacity = '0';
+        },10);
+        setTimeout(()=> c.remove(),1400);
+      }
+    }
+
+    // update every 250ms for snappy UI
+    update();
+    const tId = setInterval(update, 250);
+
+    // share button: copy a short message
+    document.getElementById('shareBtn').addEventListener('click', async ()=>{
+      const message = "Can't wait to see you on Oct 3, 2025 at 10:30 PM IST ❤️ — counting down until then!";
+      try {
+        await navigator.clipboard.writeText(message);
+        document.getElementById('shareBtn').textContent = "Copied!";
+        setTimeout(()=> document.getElementById('shareBtn').textContent = "Copy invite message", 1600);
+      } catch(e){
+        alert("Copy failed — here's the message:\\n\\n" + message);
+      }
+    });
+
+    // ensure when page hidden then visible, update immediately
+    document.addEventListener('visibilitychange', ()=> { if (!document.hidden) update(); });
+
+    // If user wants a localized example: show the target time in user's timezone below the note (brief)
+    (function showLocalTarget(){
+      const localString = target.toLocaleString(undefined, {
+        year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12: false
+      });
+      note.textContent = note.textContent + " • This shows as " + localString + " on your device.";
+    })();
+
+  </script>
+</body>
+</html>
