@@ -1,0 +1,23 @@
+@Bean
+public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(
+        ConsumerFactory<String, String> consumerFactory) {
+
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
+    factory.setConsumerFactory(consumerFactory);
+
+    // Manual offset control (critical)
+    factory.getContainerProperties().setAckMode(AckMode.MANUAL);
+
+    // Error handler (no commit on errors)
+    DefaultErrorHandler errorHandler =
+        new DefaultErrorHandler(new FixedBackOff(2000L, 5));
+
+    errorHandler.setCommitRecovered(false);
+    errorHandler.setAckAfterHandle(false);
+    factory.setCommonErrorHandler(errorHandler);
+
+    // Optional but recommended
+    factory.getContainerProperties().setSyncCommits(true);
+
+    return factory;
+}
